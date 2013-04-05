@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "restify": "2.3.5",
-    "coffee-script": "1.6.2"
+    "coffee-script": "1.6.2",
+    "baconjs": "0.3.4"
   }
 }
