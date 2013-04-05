@@ -1,3 +1,4 @@
 #!/bin/bash
-
-./node_modules/coffee-script/bin/coffee src/server.coffee
+set -e
+./node_modules/coffee-script/bin/coffee -c src/server.coffee
+node src/server.js
