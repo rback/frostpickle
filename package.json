@@ -4,6 +4,7 @@
   "dependencies": {
     "restify":       "2.3.5",
     "coffee-script": "1.6.2",
-    "baconjs":       "0.3.4"
+    "baconjs": "0.3.4",
+    "coffeekup": "0.3.1"
   }
 }
