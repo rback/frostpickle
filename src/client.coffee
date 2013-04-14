@@ -2,6 +2,9 @@ net        = require("net")
 JSONStream = require('JSONStream')
 Bacon      = require("baconjs").Bacon
 numbers    = require("numbers")
+restify    = require("restify")
+ck         = require('coffeekup')
+io         = require("socket.io")
 
 stream = new Bacon.Bus()
 
@@ -73,7 +76,47 @@ estimate = Bacon.combineTemplate({
   direction: direction
 })
 
-estimate.onValue (v) -> console.log "%s", JSON.stringify(v)
+server = restify.createServer
+  formatters:
+    'text/html': (req, res, body) ->
+      return body.stack if body instanceof Error
+      return body
 
+server.use(restify.bodyParser({ mapParams: false }))
 
+template = ck.compile ->
+  doctype 5
+  html ->
+    head ->
+      meta charset: 'utf-8'
+      title '¡FrostPickle!'
+      script src: "/socket.io/socket.io.js"
+      script src: "/public/jquery-1.9.1.min.js"
+      coffeescript ->
+        socket = io.connect('http://localhost:8081')
+        socket.on 'estimate', (data) ->
+          $("#speed")    .text(data.speed.toPrecision(4))
+          $("#direction").text("dx: #{data.direction.dx.toPrecision(3)}, dy: #{data.direction.dy.toPrecision(3)}")
+  body ->
+    div ->
+      span "Speed: "
+      span id: "speed", "?"
+    div ->
+      span "Direction: "
+      span id: "direction", "?"
 
+server.get "/", (req, res) ->
+  res.send(template())
+  next()
+
+server.get /\/public\/.*/, restify.serveStatic({ directory: "." })
+
+io = io.listen(server, { log: false})
+
+io.sockets.on "connection", (s) ->
+  console.log "connection"
+  estimate.onValue (v) ->
+    s.emit "estimate", v
+
+server.listen 8081, ->
+  console.log "%s listening at %s", server.name, server.url
