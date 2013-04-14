@@ -5,6 +5,7 @@
     "restify":       "2.3.5",
     "coffee-script": "1.6.2",
     "baconjs":       "0.3.4",
-    "JSONStream":    "0.6.4"
+    "JSONStream":    "0.6.4",
+    "numbers":       "0.4.0"
   }
 }
